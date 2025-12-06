@@ -98,9 +98,61 @@ input {
   font-weight: 600;
 }
 
+.header-title {
+  flex: 1;
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Settings */
+.settings-container {
+  position: relative;
+}
+
+.settings-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tap-target-min);
+  height: var(--tap-target-min);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  transition: all 0.15s ease;
+}
+
+.settings-button:hover {
+  background: var(--color-background-hover);
+  color: var(--color-text);
+}
+
+.settings-dropdown {
+  position: absolute;
+  top: calc(100% + var(--spacing-xs));
+  right: 0;
+  min-width: 250px;
+  padding: var(--spacing-md);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 200;
+}
+
+.settings-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-xs);
+}
+
 /* Project selector */
 .project-selector {
-  flex: 1;
+  width: 100%;
   min-height: var(--tap-target-min);
   padding: var(--spacing-sm) var(--spacing-md);
   font-size: var(--font-size-md);

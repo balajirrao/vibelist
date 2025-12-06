@@ -2,7 +2,11 @@ import { useEffect } from 'react'
 import { useProjects } from '../../hooks/useProjects'
 import { useProjectStore } from '../../store/projectStore'
 
-export function ProjectSelector() {
+interface ProjectSelectorProps {
+  onSelect?: () => void
+}
+
+export function ProjectSelector({ onSelect }: ProjectSelectorProps) {
   const { data: projects, isLoading } = useProjects()
   const selectedId = useProjectStore((s) => s.selectedProjectId)
   const setSelectedId = useProjectStore((s) => s.setSelectedProjectId)
@@ -25,7 +29,10 @@ export function ProjectSelector() {
     <select
       className="project-selector"
       value={selectedId || ''}
-      onChange={(e) => setSelectedId(e.target.value)}
+      onChange={(e) => {
+        setSelectedId(e.target.value)
+        onSelect?.()
+      }}
     >
       {projects.map((project) => (
         <option key={project.id} value={project.id}>
