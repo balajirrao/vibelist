@@ -32,7 +32,49 @@ export function useCreateTask() {
         throw error
       }
     },
-    onSuccess: () => {
+    onMutate: async (data: CreateTaskRequest) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['tasks', projectId] })
+
+      const previousTasks = queryClient.getQueryData<Task[]>(['tasks', projectId])
+
+      // Create optimistic task with temp ID
+      const tempId = `temp-${Date.now()}`
+      const optimisticTask: Task = {
+        id: tempId,
+        project_id: projectId || '',
+        section_id: data.section_id === 'no-section' ? null : (data.section_id || null),
+        parent_id: data.parent_id || null,
+        content: data.content,
+        description: '',
+        is_completed: false,
+        order: 999999, // Put at end
+        priority: 1,
+        due: null,
+        labels: [],
+      }
+
+      // Add optimistic task to cache
+      queryClient.setQueryData<Task[]>(['tasks', projectId], (old) =>
+        old ? [...old, optimisticTask] : [optimisticTask]
+      )
+
+      return { previousTasks, tempId }
+    },
+    onError: (_err, _data, context) => {
+      // Rollback on error (unless offline - then keep optimistic)
+      if (navigator.onLine && context?.previousTasks) {
+        queryClient.setQueryData(['tasks', projectId], context.previousTasks)
+      }
+    },
+    onSuccess: (newTask, _data, context) => {
+      if (newTask && context?.tempId) {
+        // Replace temp task with real one
+        queryClient.setQueryData<Task[]>(['tasks', projectId], (old) =>
+          old?.map((task) => (task.id === context.tempId ? newTask : task))
+        )
+      }
+      // Always invalidate to sync with server
       queryClient.invalidateQueries({ queryKey: ['tasks', projectId] })
     },
   })

@@ -24,8 +24,11 @@ export function Task({ task, allTasks, subtasks, level = 0 }: TaskProps) {
   const hasSubtasks = subtasks.length > 0
   const dueDateDisplay = getDueDateDisplay(task.due)
   const isTaskOverdue = isOverdue(task.due)
+  const isPending = task.id.startsWith('temp-')
 
   const handleToggleComplete = () => {
+    // Don't allow completing pending tasks
+    if (isPending) return
     if (task.is_completed) {
       reopenTask(task.id)
     } else {
@@ -39,7 +42,7 @@ export function Task({ task, allTasks, subtasks, level = 0 }: TaskProps) {
   }
 
   return (
-    <div className={`task ${task.is_completed ? 'completed' : ''}`}>
+    <div className={`task ${task.is_completed ? 'completed' : ''} ${isPending ? 'pending' : ''}`}>
       <div className="task-main">
         <div className="task-row">
           <button

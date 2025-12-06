@@ -219,6 +219,15 @@ input {
   touch-action: pan-y;
 }
 
+.task.pending {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.task.pending .task-content {
+  font-style: italic;
+}
+
 .task:last-child {
   border-bottom: none;
 }
