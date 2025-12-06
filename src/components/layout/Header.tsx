@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { ProjectSelector } from '../project/ProjectSelector'
+import { SyncStatus } from '../sync/SyncStatus'
 import { useProjects } from '../../hooks/useProjects'
 import { useProjectStore } from '../../store/projectStore'
 
@@ -28,6 +29,7 @@ export function Header() {
     <header className="header">
       <div className="header-content">
         <h1 className="header-title">{selectedProject?.name || 'Select a project'}</h1>
+        <SyncStatus />
         <div className="settings-container" ref={dropdownRef}>
           <button
             className="settings-button"
