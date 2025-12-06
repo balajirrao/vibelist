@@ -59,6 +59,7 @@ class OperationQueue {
     operation: QueuedOperation,
     projectId: string | null
   ): Promise<string> {
+    console.log('[Queue] Enqueuing operation:', operation.type, { projectId })
     await this.init()
 
     const item: QueueItem = {
@@ -76,11 +77,15 @@ class OperationQueue {
       const request = store.add(item)
 
       request.onsuccess = () => {
+        console.log('[Queue] Enqueued:', item.id)
         this.notifyListeners()
         this.processQueue()
         resolve(item.id)
       }
-      request.onerror = () => reject(request.error)
+      request.onerror = () => {
+        console.error('[Queue] Enqueue failed:', request.error)
+        reject(request.error)
+      }
     })
   }
 
@@ -182,37 +187,57 @@ class OperationQueue {
   }
 
   async processQueue(token?: string): Promise<void> {
-    if (this.processing) return
-    if (!navigator.onLine) return
+    console.log('[Queue] processQueue called', { processing: this.processing, online: navigator.onLine })
+
+    if (this.processing) {
+      console.log('[Queue] Already processing, skipping')
+      return
+    }
+    if (!navigator.onLine) {
+      console.log('[Queue] Offline, skipping')
+      return
+    }
 
     // Get token from localStorage if not provided
     const authToken = token || this.getStoredToken()
-    if (!authToken) return
+    console.log('[Queue] Token available:', !!authToken, 'provided:', !!token)
+    if (!authToken) {
+      console.log('[Queue] No token, skipping')
+      return
+    }
 
     this.processing = true
     this.notifyListeners()
 
     try {
       const pending = await this.getPending()
+      console.log('[Queue] Pending items:', pending.length, pending.map(p => ({ id: p.id, type: p.operation.type })))
 
       for (const item of pending) {
         // Check if still online
-        if (!navigator.onLine) break
+        if (!navigator.onLine) {
+          console.log('[Queue] Went offline, breaking')
+          break
+        }
 
+        console.log('[Queue] Processing item:', item.id, item.operation.type)
         item.status = 'processing'
         await this.updateItem(item)
 
         try {
           await this.executeOperation(item.operation, authToken)
+          console.log('[Queue] Success:', item.id)
           await this.removeItem(item.id)
         } catch (error) {
-          console.error('Queue operation failed:', error)
+          console.error('[Queue] Operation failed:', item.id, error)
           item.retries++
 
           if (item.retries >= MAX_RETRIES) {
             item.status = 'failed'
+            console.log('[Queue] Max retries reached, marking failed:', item.id)
           } else {
             item.status = 'pending'
+            console.log('[Queue] Will retry:', item.id, 'attempt:', item.retries)
             // Wait before next retry
             await new Promise((r) => setTimeout(r, RETRY_DELAY))
           }
@@ -223,6 +248,7 @@ class OperationQueue {
     } finally {
       this.processing = false
       this.notifyListeners()
+      console.log('[Queue] Processing complete')
     }
   }
 
