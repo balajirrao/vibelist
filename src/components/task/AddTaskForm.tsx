@@ -18,7 +18,7 @@ export function AddTaskForm({ sectionId, parentId, onClose }: AddTaskFormProps) 
     createTask(
       {
         content: content.trim(),
-        section_id: sectionId,
+        section_id: sectionId === 'no-section' ? undefined : sectionId,
         parent_id: parentId,
       },
       {
