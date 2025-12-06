@@ -231,7 +231,8 @@ class OperationQueue {
       const stored = localStorage.getItem('vibelist-auth')
       if (stored) {
         const parsed = JSON.parse(stored)
-        return parsed.state?.token || null
+        // Zustand persist stores directly, not under state key
+        return parsed.token || parsed.state?.token || null
       }
     } catch {
       // Ignore parsing errors
