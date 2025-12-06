@@ -153,6 +153,21 @@ class OperationQueue {
     }
   }
 
+  async clearPending(): Promise<void> {
+    const all = await this.getAll()
+    const pending = all.filter((i) => i.status === 'pending')
+    for (const item of pending) {
+      await this.removeItem(item.id)
+    }
+  }
+
+  async clearAll(): Promise<void> {
+    const all = await this.getAll()
+    for (const item of all) {
+      await this.removeItem(item.id)
+    }
+  }
+
   async retryFailed(): Promise<void> {
     const all = await this.getAll()
     const failed = all.filter((i) => i.status === 'failed')

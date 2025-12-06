@@ -501,6 +501,7 @@ input {
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
+  position: relative;
 }
 
 .sync-badge {
@@ -560,4 +561,67 @@ input {
 
 .sync-action:hover {
   text-decoration: underline;
+}
+
+.sync-pending {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.sync-details {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: var(--spacing-sm);
+  min-width: 250px;
+  max-width: 350px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+}
+
+.sync-detail-item {
+  display: flex;
+  gap: var(--spacing-xs);
+  padding: 4px 0;
+  font-size: var(--font-size-sm);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.sync-detail-item:last-child {
+  border-bottom: none;
+}
+
+.sync-detail-status {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  text-transform: uppercase;
+}
+
+.sync-detail-status.pending {
+  background: #fefce8;
+  color: #ca8a04;
+}
+
+.sync-detail-status.processing {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.sync-detail-status.failed {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.sync-detail-op {
+  flex: 1;
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

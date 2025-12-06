@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { operationQueue, type QueuedOperation } from '../services/operationQueue'
+import { operationQueue, type QueuedOperation, type QueueItem } from '../services/operationQueue'
 import { useAuthStore } from '../store/authStore'
 import { useProjectStore } from '../store/projectStore'
 
@@ -80,6 +80,18 @@ export function useOperationQueue() {
     await operationQueue.clearFailed()
   }, [])
 
+  const clearPending = useCallback(async () => {
+    await operationQueue.clearPending()
+  }, [])
+
+  const clearAll = useCallback(async () => {
+    await operationQueue.clearAll()
+  }, [])
+
+  const getPendingItems = useCallback(async (): Promise<QueueItem[]> => {
+    return operationQueue.getAll()
+  }, [])
+
   const processNow = useCallback(async () => {
     if (token) {
       await operationQueue.processQueue(token)
@@ -91,6 +103,9 @@ export function useOperationQueue() {
     enqueue,
     retryFailed,
     clearFailed,
+    clearPending,
+    clearAll,
+    getPendingItems,
     processNow,
   }
 }
