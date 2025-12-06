@@ -43,6 +43,7 @@ export class TodoistAPI {
   }
 
   async createTask(data: CreateTaskRequest): Promise<Task> {
+    console.log('[API] createTask payload:', data)
     return this.request<Task>('/tasks', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -50,6 +51,7 @@ export class TodoistAPI {
   }
 
   async updateTask(taskId: string, data: UpdateTaskRequest): Promise<Task> {
+    console.log('[API] updateTask payload:', { taskId, data })
     return this.request<Task>(`/tasks/${taskId}`, {
       method: 'POST',
       body: JSON.stringify(data),
